@@ -1,66 +1,248 @@
-<h2>Tambah User</h2>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f6fa;
+        margin: 0;
+        padding: 30px;
+        color: #333;
+    }
 
-@if ($errors->any())
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-@endif
+    .container {
+        max-width: 700px;
+        margin: auto;
+    }
 
-<form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
 
-    @csrf
+    h2 {
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: #222;
+    }
 
-    <label>Nama</label><br>
-    <input type="text" name="name">
+    .form-group {
+        margin-bottom: 18px;
+    }
 
-    <br><br>
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+        font-size: 14px;
+        color: #374151;
+    }
 
-    <label>Email</label><br>
-    <input type="email" name="email">
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+    }
 
-    <br><br>
+    textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
 
-    <label>Password</label><br>
-    <input type="password" name="password">
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #4f46e5;
+    }
 
-    <br><br>
+    .error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+        padding: 12px 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
 
-    <label>Konfirmasi Password</label><br>
-    <input type="password" name="password_confirmation">
+    .error ul {
+        margin: 0;
+        padding-left: 20px;
+    }
 
-    <br><br>
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
 
-    <label>Role</label><br>
-    <select name="role">
-        <option value="">-- Pilih Role --</option>
-        <option value="admin">Admin</option>
-        <option value="customer">Customer</option>
-        <option value="designer">Designer</option>
-    </select>
+    .btn {
+        padding: 11px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
 
-    <br><br>
+    .btn-simpan {
+        background: #4f46e5;
+        color: white;
+    }
 
-    <label>No. Telepon</label><br>
-    <input type="text" name="no_telepon">
+    .btn-simpan:hover {
+        background: #4338ca;
+    }
 
-    <br><br>
+    .btn-kembali {
+        background: #e5e7eb;
+        color: #374151;
+    }
 
-    <label>Alamat</label><br>
-    <textarea name="alamat"></textarea>
+    .btn-kembali:hover {
+        background: #d1d5db;
+    }
+</style>
 
-    <br><br>
+<div class="container">
 
-    <label>Foto</label><br>
-    <input type="file" name="foto">
+    <div class="card">
 
-    <br><br>
+        <h2>Tambah User</h2>
 
-    <button type="submit">Simpan</button>
+        @if ($errors->any())
+            <div class="error">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-</form>
+        <form
+            action="{{ route('user.store') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+            @csrf
 
-<br>
+            <div class="form-group">
+                <label>Nama</label>
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ old('name') }}"
+                    placeholder="Masukkan nama"
+                >
+            </div>
 
-<a href="{{ route('user.index') }}">Kembali</a>
+            <div class="form-group">
+                <label>Email</label>
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    placeholder="Masukkan email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Masukkan password"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Konfirmasi Password</label>
+                <input
+                    type="password"
+                    name="password_confirmation"
+                    placeholder="Masukkan ulang password"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Role</label>
+
+                <select name="role">
+                    <option value="">-- Pilih Role --</option>
+
+                    <option
+                        value="admin"
+                        {{ old('role') == 'admin' ? 'selected' : '' }}
+                    >
+                        Admin
+                    </option>
+
+                    <option
+                        value="customer"
+                        {{ old('role') == 'customer' ? 'selected' : '' }}
+                    >
+                        Customer
+                    </option>
+
+                    <option
+                        value="designer"
+                        {{ old('role') == 'designer' ? 'selected' : '' }}
+                    >
+                        Designer
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>No. Telepon</label>
+
+                <input
+                    type="text"
+                    name="no_telepon"
+                    value="{{ old('no_telepon') }}"
+                    placeholder="Masukkan nomor telepon"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Alamat</label>
+
+                <textarea
+                    name="alamat"
+                    placeholder="Masukkan alamat"
+                >{{ old('alamat') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Foto</label>
+
+                <input
+                    type="file"
+                    name="foto"
+                >
+            </div>
+
+            <div class="buttons">
+                <button type="submit" class="btn btn-simpan">
+                    Simpan
+                </button>
+
+                <a
+                    href="{{ route('user.index') }}"
+                    class="btn btn-kembali"
+                >
+                    Kembali
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

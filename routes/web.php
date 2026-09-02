@@ -28,10 +28,9 @@ Route::put('/portfolios/{id}', [PortofolioController::class, 'update'])->name('p
 Route::delete('/portfolios/{id}', [PortofolioController::class, 'destroy'])->name('portfolios.destroy'); 
 Route::get('/portfolios/{id}', [PortofolioController::class, 'show'])->name('portfolios.show'); 
 
-Route::get('/user', [UserController::class, 'index'])->name('user.index'); // Tampilkan semua kategori
-Route::get('/user/create', [UserController::class, 'create'])->name('user.create'); // Form tambah kategori
-Route::post('/user', [UserController::class, 'store'])->name('user.store'); // Simpan kategori baru
-Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit'); // Form edit kategori
-Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update'); // Update kategori
-Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy'); // Hapus kategori
-
+Route::get('/user', [UserController::class, 'index'])->name('user.index'); // Tampilkan semua user
+Route::get('/user/create', [UserController::class, 'create'])->name('user.create'); // Form tambah user
+Route::post('/user', [UserController::class, 'store'])->name('user.store'); // Simpan user baru
+Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit'); // Form edit user
+Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update'); // Update user
+Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy'); // Hapus user
