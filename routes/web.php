@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ServiceController;
+
 
 
 /*
@@ -34,3 +36,11 @@ Route::post('/user', [UserController::class, 'store'])->name('user.store'); // S
 Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit'); // Form edit user
 Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update'); // Update user
 Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy'); // Hapus user
+
+Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
+Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+Route::get('/services/{id}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+Route::put('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
+Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
+Route::get('/services/{id}', [ServiceController::class, 'show'])->name('services.show');
