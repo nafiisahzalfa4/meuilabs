@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProjectController;
 
 
 /*
@@ -34,3 +35,12 @@ Route::post('/user', [UserController::class, 'store'])->name('user.store'); // S
 Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit'); // Form edit user
 Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update'); // Update user
 Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy'); // Hapus user
+
+
+
+Route::get('/project', [ProjectController::class, 'index'])->name('project.index'); // Tampilkan semua project
+Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create'); // Form tambah project
+Route::post('/project', [ProjectController::class, 'store'])->name('project.store'); // Simpan project baru
+Route::get('/project/{id}/edit', [ProjectController::class, 'edit'])->name('project.edit'); // Form edit project
+Route::put('/project/{id}', [ProjectController::class, 'update'])->name('project.update'); // Update project
+Route::delete('/project/{id}', [ProjectController::class, 'destroy'])->name('project.destroy'); // Hapus project
