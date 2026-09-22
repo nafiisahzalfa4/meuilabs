@@ -3,12 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\User;
+use App\Project;
+use App\Service;
 
-class Order extends Model
+class Orders extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'customer_id',
         'designer_id',
@@ -36,11 +36,11 @@ class Order extends Model
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class, 'service_id');
     }
 
     public function project()
     {
-        return $this->hasOne(Project::class);
+        return $this->hasOne(Project::class, 'order_id');
     }
 }
