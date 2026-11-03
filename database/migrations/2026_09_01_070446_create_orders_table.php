@@ -6,32 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateOrdersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('customer_id')
-                ->constrained('users')
-                ->cascadeOnDelete();
+            $table->bigIncrements('id');
 
-            $table->foreignId('designer_id')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
-
-            $table->foreignId('service_id')
-                ->constrained('services')
-                ->restrictOnDelete();
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('designer_id')->nullable();
+            $table->unsignedBigInteger('service_id');
 
             $table->date('tanggal_pesan');
-
             $table->text('catatan')->nullable();
-
             $table->decimal('total_harga', 12, 2);
 
             $table->enum('status', [
@@ -40,15 +25,23 @@ class CreateOrdersTable extends Migration
                 'selesai',
                 'dibatalkan'
             ])->default('menunggu');
+
             $table->timestamps();
+
+            $table->foreign('customer_id')
+                  ->references('id')->on('users')
+                  ->onDelete('cascade');
+
+            $table->foreign('designer_id')
+                  ->references('id')->on('users')
+                  ->onDelete('set null');
+
+            $table->foreign('service_id')
+                  ->references('id')->on('services')
+                  ->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('orders');

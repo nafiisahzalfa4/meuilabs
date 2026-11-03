@@ -2,13 +2,10 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\Model;
-use App\Orders;
 
 class Project extends Model
 {
-
     protected $fillable = [
         'order_id',
         'project_name',
@@ -16,7 +13,7 @@ class Project extends Model
         'deadline',
         'progress',
         'status',
-    ]; 
+    ];
 
     protected $casts = [
         'start_date' => 'date',

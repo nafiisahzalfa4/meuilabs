@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -26,4 +25,19 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function ordersAsCustomer()
+    {
+        return $this->hasMany(Order::class, 'customer_id');
+    }
+
+    public function ordersAsDesigner()
+    {
+        return $this->hasMany(Order::class, 'designer_id');
+    }
+
+    public function portfolios()
+    {
+        return $this->hasMany(Portofolio::class, 'designer_id');
+    }
 }

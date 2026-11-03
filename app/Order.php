@@ -3,12 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\User;
-use App\Project;
-use App\Service;
 
-class Orders extends Model
+class Order extends Model
 {
+    protected $table = 'orders';
+
     protected $fillable = [
         'customer_id',
         'designer_id',
@@ -17,11 +16,6 @@ class Orders extends Model
         'catatan',
         'total_harga',
         'status',
-    ];
-
-    protected $casts = [
-        'tanggal_pesan' => 'date',
-        'total_harga' => 'decimal:2',
     ];
 
     public function customer()

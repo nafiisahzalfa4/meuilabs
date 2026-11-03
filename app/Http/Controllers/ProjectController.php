@@ -2,31 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
+use App\Project;
+use App\Order;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan semua project.
      */
     public function index()
     {
-        $projects = Project::all();
+        $projects = Project::with('order.customer', 'order.service')
+            ->latest()
+            ->get();
 
         return view('projects.index', compact('projects'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form tambah project.
      */
     public function create()
     {
-        return view('projects.create');
+        $orders = Order::with('customer', 'service')
+            ->whereDoesntHave('project')
+            ->latest()
+            ->get();
+
+        return view('projects.create', compact('orders'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan project baru.
      */
     public function store(Request $request)
     {
@@ -34,86 +42,103 @@ class ProjectController extends Controller
             'order_id' => 'required|exists:orders,id',
             'project_name' => 'required|string|max:100',
             'start_date' => 'nullable|date',
-            'deadline' => 'nullable|date',
+            'deadline' => 'nullable|date|after_or_equal:start_date',
             'progress' => 'nullable|integer|min:0|max:100',
             'status' => 'nullable|in:not_started,process,revision,completed',
         ]);
 
+        $order = Order::findOrFail($request->order_id);
+
+        if ($order->project()->exists()) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'order_id' => 'Order ini sudah memiliki project.'
+                ]);
+        }
+
+        $progress = $request->progress ?? 0;
+        $status = $request->status ?? 'not_started';
+
         Project::create([
-            'order_id' => $request->input('order_id'),
-            'project_name' => $request->input('project_name'),
-            'start_date' => $request->input('start_date'),
-            'deadline' => $request->input('deadline'),
-            'progress' => $request->input('progress') ?? 0,
-            'status' => $request->input('status'),
+            'order_id' => $request->order_id,
+            'project_name' => $request->project_name,
+            'start_date' => $request->start_date,
+            'deadline' => $request->deadline,
+            'progress' => $progress,
+            'status' => $status,
         ]);
 
         return redirect()
             ->route('projects.index')
-            ->with('success', 'Project created successfully.');
+            ->with('success', 'Project berhasil dibuat.');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail project.
      */
-    public function show($id)
+    public function show(Project $project)
     {
-        $project = Project::findOrFail($id);
+        $project->load('order.customer', 'order.service');
 
         return view('projects.show', compact('project'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form edit project.
      */
-    public function edit($id)
+    
+    public function edit(Project $project)
     {
-        $project = Project::findOrFail($id);
+        $orders = Order::with('customer', 'service')
+            ->whereDoesntHave('project')
+            ->orWhere('id', $project->order_id)
+            ->latest()
+            ->get();
 
-        return view('projects.edit', compact('project'));
+        return view('projects.edit', compact('project', 'orders'));
     }
 
+
     /**
-     * Update the specified resource in storage.
+     * Mengupdate project.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Project $project)
     {
         $request->validate([
             'order_id' => 'required|exists:orders,id',
             'project_name' => 'required|string|max:100',
             'start_date' => 'nullable|date',
-            'deadline' => 'nullable|date',
+            'deadline' => 'nullable|date|after_or_equal:start_date',
             'progress' => 'nullable|integer|min:0|max:100',
             'status' => 'required|in:not_started,process,revision,completed',
         ]);
 
-        $project = Project::findOrFail($id);
+        $progress = $request->progress ?? 0;
 
         $project->update([
-            'order_id' => $request->input('order_id'),
-            'project_name' => $request->input('project_name'),
-            'start_date' => $request->input('start_date'),
-            'deadline' => $request->input('deadline'),
-            'progress' => $request->input('progress') ?? 0,
-            'status' => $request->input('status'),
+            'order_id' => $request->order_id,
+            'project_name' => $request->project_name,
+            'start_date' => $request->start_date,
+            'deadline' => $request->deadline,
+            'progress' => $progress,
+            'status' => $request->status,
         ]);
 
         return redirect()
             ->route('projects.index')
-            ->with('success', 'Project updated successfully.');
+            ->with('success', 'Project berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus project.
      */
-    public function destroy($id)
+    public function destroy(Project $project)
     {
-        $project = Project::findOrFail($id);
-
         $project->delete();
 
         return redirect()
             ->route('projects.index')
-            ->with('success', 'Project deleted successfully.');
+            ->with('success', 'Project berhasil dihapus.');
     }
 }

@@ -4,44 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Menampilkan semua layanan
     public function index()
     {
         $services = Service::latest()->get();
-        return view('services.index', compact('services'));
 
+        return view('services.index', compact('services'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Menampilkan form tambah layanan
     public function create()
     {
         return view('services.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Menyimpan layanan baru
     public function store(Request $request)
     {
         $request->validate([
-            'nama_jasa' => 'required|max:100',
-            'deskripsi' => 'required',
-            'harga' => 'required|numeric',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'nama_jasa' => 'required|string|max:100',
+            'deskripsi' => 'required|string',
+            'harga' => 'required|numeric|min:0',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'status' => 'required|in:aktif,nonaktif',
         ]);
 
@@ -53,96 +41,118 @@ class ServiceController extends Controller
         ]);
 
         if ($request->hasFile('gambar')) {
+            $folder = public_path('images/services');
+
+            if (!File::exists($folder)) {
+                File::makeDirectory($folder, 0755, true);
+            }
+
             $gambar = $request->file('gambar');
-            $namaGambar = time() . '.' . $gambar->getClientOriginalExtension();
-            $gambar->move(public_path('images/services'), $namaGambar);
+
+            $namaGambar = time() . '_' . uniqid() . '.' .
+                $gambar->getClientOriginalExtension();
+
+            $gambar->move($folder, $namaGambar);
 
             $data['gambar'] = $namaGambar;
         }
-        
+
+        Service::create($data);
+
+        return redirect()
+            ->route('services.index')
+            ->with('success', 'Layanan berhasil ditambahkan.');
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Menampilkan detail layanan
     public function show($id)
     {
+        $service = Service::findOrFail($id);
+
         return view('services.show', compact('service'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Menampilkan form edit layanan
     public function edit($id)
     {
+        $service = Service::findOrFail($id);
+
         return view('services.edit', compact('service'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Memperbarui layanan
     public function update(Request $request, $id)
-    { 
+    {
+        $service = Service::findOrFail($id);
+
         $request->validate([
-        'nama_jasa' => 'required|max:100',
-        'deskripsi' => 'required',
-        'harga' => 'required|numeric',
-        'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'status' => 'required|in:aktif,nonaktif',
-    ]);
+            'nama_jasa' => 'required|string|max:100',
+            'deskripsi' => 'required|string',
+            'harga' => 'required|numeric|min:0',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'status' => 'required|in:aktif,nonaktif',
+        ]);
 
-    $service = Service::findOrFail($id);
+        $data = $request->only([
+            'nama_jasa',
+            'deskripsi',
+            'harga',
+            'status',
+        ]);
 
-    $data = $request->only([
-        'nama_jasa',
-        'deskripsi',
-        'harga',
-        'status',
-    ]);
+        if ($request->hasFile('gambar')) {
+            $folder = public_path('images/services');
 
-    if ($request->hasFile('gambar')) {
-        $gambar = $request->file('gambar');
-        $namaGambar = time() . '.' . $gambar->getClientOriginalExtension();
+            if (!File::exists($folder)) {
+                File::makeDirectory($folder, 0755, true);
+            }
 
-        $gambar->move(
-            public_path('images/services'),
-            $namaGambar
-        );
+            // Hapus gambar lama
+            if ($service->gambar) {
+                $gambarLama = $folder . '/' . $service->gambar;
 
-        $data['gambar'] = $namaGambar;
+                if (File::exists($gambarLama)) {
+                    File::delete($gambarLama);
+                }
+            }
+
+            $gambar = $request->file('gambar');
+
+            $namaGambar = time() . '_' . uniqid() . '.' .
+                $gambar->getClientOriginalExtension();
+
+            $gambar->move($folder, $namaGambar);
+
+            $data['gambar'] = $namaGambar;
+        }
+
+        $service->update($data);
+
+        return redirect()
+            ->route('services.index')
+            ->with('success', 'Data layanan berhasil diperbarui.');
     }
 
-    $service->update($data);
-
-    return redirect()
-        ->route('services.index')
-        ->with('success', 'Data jasa berhasil diubah.');
-}
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Menghapus layanan
     public function destroy($id)
     {
         $service = Service::findOrFail($id);
-        $service->delete();
-        
-        return redirect()
-        ->route('services.index')
-        ->with('success', 'Data jasa berhasil dihapus.');
-    }
 
+        // Hapus file gambar
+        if ($service->gambar) {
+            $gambar = public_path(
+                'images/services/' . $service->gambar
+            );
+
+            if (File::exists($gambar)) {
+                File::delete($gambar);
+            }
+        }
+
+        $service->delete();
+
+        return redirect()
+            ->route('services.index')
+            ->with('success', 'Layanan berhasil dihapus.');
+    }
 }

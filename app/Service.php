@@ -15,4 +15,9 @@ class Service extends Model
         'gambar',
         'status',
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

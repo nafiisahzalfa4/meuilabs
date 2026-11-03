@@ -2,39 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Portofolio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Portofolio;
 
 class PortofolioController extends Controller
 {
-    /**
-     * Menampilkan semua portfolio.
-     */
+    // Menampilkan semua portofolio
     public function index()
     {
-        $portofolios = Portofolio::with('designer')
-            ->latest()
-            ->get();
+        $portofolios = Portofolio::with('designer')->latest()->get();
 
-        return view('portfolios.index', compact('portofolios'));
+        return view('portofolios.index', compact('portofolios'));
     }
 
-    /**
-     * Menampilkan form tambah portfolio.
-     */
+    // Menampilkan form tambah portofolio
     public function create()
     {
-        return view('portfolios.create');
+        return view('portofolios.create');
     }
 
-    /**
-     * Menyimpan portfolio baru.
-     */
+    // Menyimpan portofolio baru
     public function store(Request $request)
     {
         $request->validate([
-            'judul' => 'required|string|max:100',
+            'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'kategori' => 'required|in:website,mobile,dashboard,lainnya',
@@ -43,7 +35,8 @@ class PortofolioController extends Controller
         $gambar = null;
 
         if ($request->hasFile('gambar')) {
-            $gambar = $request->file('gambar')->store('portfolios', 'public');
+            $gambar = $request->file('gambar')
+                ->store('portfolios', 'public');
         }
 
         Portofolio::create([
@@ -54,36 +47,33 @@ class PortofolioController extends Controller
             'kategori' => $request->kategori,
         ]);
 
-        return redirect()
-            ->route('portfolios.index')
-            ->with('success', 'Portfolio berhasil ditambahkan.');
+        return redirect()->route('portfolios.index')
+            ->with('success', 'Portofolio berhasil ditambahkan!');
     }
 
-    /**
-     * Menampilkan detail portfolio.
-     */
-    public function show(Portofolio $portfolio)
+    // Menampilkan detail portofolio
+    public function show($portfolio)
     {
-        $portfolio->load('designer');
+        $portfolio = Portofolio::with('designer')->findOrFail($portfolio);
 
-        return view('portfolios.show', compact('portfolio'));
+        return view('portofolios.show', compact('portfolio'));
     }
 
-    /**
-     * Menampilkan form edit portfolio.
-     */
-    public function edit(Portofolio $portfolio)
+    // Menampilkan form edit portofolio
+    public function edit($portfolio)
     {
-        return view('portfolios.edit', compact('portfolio'));
+        $portfolio = Portofolio::findOrFail($portfolio);
+
+        return view('portofolios.edit', compact('portfolio'));
     }
 
-    /**
-     * Mengupdate portfolio.
-     */
-    public function update(Request $request, Portofolio $portfolio)
+    // Memperbarui portofolio
+    public function update(Request $request, $portfolio)
     {
+        $portfolio = Portofolio::findOrFail($portfolio);
+
         $request->validate([
-            'judul' => 'required|string|max:100',
+            'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'kategori' => 'required|in:website,mobile,dashboard,lainnya',
@@ -102,20 +92,18 @@ class PortofolioController extends Controller
 
         $portfolio->update($data);
 
-        return redirect()
-            ->route('portfolios.index')
-            ->with('success', 'Portfolio berhasil diperbarui.');
+        return redirect()->route('portfolios.index')
+            ->with('success', 'Portofolio berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus portfolio.
-     */
-    public function destroy(Portofolio $portfolio)
+    // Menghapus portofolio
+    public function destroy($portfolio)
     {
+        $portfolio = Portofolio::findOrFail($portfolio);
+
         $portfolio->delete();
 
-        return redirect()
-            ->route('portfolios.index')
-            ->with('success', 'Portfolio berhasil dihapus.');
+        return redirect()->route('portfolios.index')
+            ->with('success', 'Portofolio berhasil dihapus!');
     }
 }

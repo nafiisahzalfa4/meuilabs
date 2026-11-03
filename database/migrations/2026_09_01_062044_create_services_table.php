@@ -18,7 +18,7 @@ class CreateServicesTable extends Migration
             $table->string('nama_jasa', 100);
             $table->text('deskripsi');
             $table->decimal('harga', 12, 2);
-            $table->string('gambar')->nullable;
+            $table->string('gambar')->nullable();
             $table->enum('status', [
                 'aktif',
                 'nonaktif'
