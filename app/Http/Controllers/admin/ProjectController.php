@@ -1,18 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Project;
 use App\Order;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    /**
-     * Menampilkan semua project.
-     */
+    private function checkAdmin()
+    {
+        abort_unless(auth()->check() && auth()->user()->role == 'admin', 403);
+    }
+
+    // Menampilkan semua project
     public function index()
     {
+        $this->checkAdmin();
+
         $projects = Project::with('order.customer', 'order.service')
             ->latest()
             ->get();
@@ -20,11 +26,11 @@ class ProjectController extends Controller
         return view('projects.index', compact('projects'));
     }
 
-    /**
-     * Menampilkan form tambah project.
-     */
+    // Form tambah project
     public function create()
     {
+        $this->checkAdmin();
+
         $orders = Order::with('customer', 'service')
             ->whereDoesntHave('project')
             ->latest()
@@ -33,11 +39,11 @@ class ProjectController extends Controller
         return view('projects.create', compact('orders'));
     }
 
-    /**
-     * Menyimpan project baru.
-     */
+    // Menyimpan project
     public function store(Request $request)
     {
+        $this->checkAdmin();
+
         $request->validate([
             'order_id' => 'required|exists:orders,id',
             'project_name' => 'required|string|max:100',
@@ -57,16 +63,13 @@ class ProjectController extends Controller
                 ]);
         }
 
-        $progress = $request->progress ?? 0;
-        $status = $request->status ?? 'not_started';
-
         Project::create([
             'order_id' => $request->order_id,
             'project_name' => $request->project_name,
             'start_date' => $request->start_date,
             'deadline' => $request->deadline,
-            'progress' => $progress,
-            'status' => $status,
+            'progress' => $request->progress ?? 0,
+            'status' => $request->status ?? 'not_started',
         ]);
 
         return redirect()
@@ -74,37 +77,37 @@ class ProjectController extends Controller
             ->with('success', 'Project berhasil dibuat.');
     }
 
-    /**
-     * Menampilkan detail project.
-     */
+    // Detail project
     public function show(Project $project)
     {
+        $this->checkAdmin();
+
         $project->load('order.customer', 'order.service');
 
         return view('projects.show', compact('project'));
     }
 
-    /**
-     * Menampilkan form edit project.
-     */
-    
+    // Form edit project
     public function edit(Project $project)
     {
+        $this->checkAdmin();
+
         $orders = Order::with('customer', 'service')
-            ->whereDoesntHave('project')
-            ->orWhere('id', $project->order_id)
+            ->where(function ($query) use ($project) {
+                $query->whereDoesntHave('project')
+                    ->orWhere('id', $project->order_id);
+            })
             ->latest()
             ->get();
 
         return view('projects.edit', compact('project', 'orders'));
     }
 
-
-    /**
-     * Mengupdate project.
-     */
+    // Update project
     public function update(Request $request, Project $project)
     {
+        $this->checkAdmin();
+
         $request->validate([
             'order_id' => 'required|exists:orders,id',
             'project_name' => 'required|string|max:100',
@@ -114,14 +117,25 @@ class ProjectController extends Controller
             'status' => 'required|in:not_started,process,revision,completed',
         ]);
 
-        $progress = $request->progress ?? 0;
+        $order = Order::findOrFail($request->order_id);
+
+        if (
+            $order->id != $project->order_id &&
+            $order->project()->exists()
+        ) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'order_id' => 'Order ini sudah memiliki project lain.'
+                ]);
+        }
 
         $project->update([
             'order_id' => $request->order_id,
             'project_name' => $request->project_name,
             'start_date' => $request->start_date,
             'deadline' => $request->deadline,
-            'progress' => $progress,
+            'progress' => $request->progress ?? 0,
             'status' => $request->status,
         ]);
 
@@ -130,11 +144,11 @@ class ProjectController extends Controller
             ->with('success', 'Project berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus project.
-     */
+    // Hapus project
     public function destroy(Project $project)
     {
+        $this->checkAdmin();
+
         $project->delete();
 
         return redirect()

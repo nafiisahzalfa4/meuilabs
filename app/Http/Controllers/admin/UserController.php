@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -9,29 +10,34 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Menampilkan semua user.
-     */
+    private function checkAdmin()
+    {
+        abort_unless(auth()->check() && auth()->user()->role == 'admin', 403);
+    }
+
+    // Menampilkan semua user
     public function index()
     {
+        $this->checkAdmin();
+
         $users = User::latest()->get();
 
         return view('user.index', compact('users'));
     }
 
-    /**
-     * Menampilkan form tambah user.
-     */
+    // Form tambah user
     public function create()
     {
+        $this->checkAdmin();
+
         return view('user.create');
     }
 
-    /**
-     * Menyimpan user baru.
-     */
+    // Menyimpan user
     public function store(Request $request)
     {
+        $this->checkAdmin();
+
         $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:100|unique:users,email',
@@ -52,7 +58,6 @@ class UserController extends Controller
         $user->alamat = $request->alamat;
 
         if ($request->hasFile('foto')) {
-
             $folder = public_path('uploads/users');
 
             if (!File::exists($folder)) {
@@ -76,21 +81,21 @@ class UserController extends Controller
             ->with('success', 'User berhasil ditambahkan.');
     }
 
-    /**
-     * Menampilkan form edit user.
-     */
+    // Form edit user
     public function edit($id)
     {
+        $this->checkAdmin();
+
         $user = User::findOrFail($id);
 
         return view('user.edit', compact('user'));
     }
 
-    /**
-     * Mengupdate user.
-     */
+    // Update user
     public function update(Request $request, $id)
     {
+        $this->checkAdmin();
+
         $user = User::findOrFail($id);
 
         $request->validate([
@@ -114,7 +119,6 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('foto')) {
-
             $folder = public_path('uploads/users');
 
             if (!File::exists($folder)) {
@@ -146,18 +150,22 @@ class UserController extends Controller
             ->with('success', 'User berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus user.
-     */
+    // Hapus user
     public function destroy($id)
     {
+        $this->checkAdmin();
+
         $user = User::findOrFail($id);
 
-        if ($user->foto) {
-
-            $path = public_path(
-                'uploads/users/' . $user->foto
+        if ($user->id == auth()->id()) {
+            return back()->with(
+                'error',
+                'Kamu tidak dapat menghapus akun yang sedang digunakan.'
             );
+        }
+
+        if ($user->foto) {
+            $path = public_path('uploads/users/' . $user->foto);
 
             if (File::exists($path)) {
                 File::delete($path);

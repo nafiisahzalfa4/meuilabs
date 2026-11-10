@@ -1,210 +1,314 @@
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Super Admin - MeUI Labs</title>
+@extends('admin.layouts.app')
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+@section('title', 'Dashboard Admin')
+@section('page-title', 'Dashboard')
 
-        body {
-            background: #f4f6f9;
-            color: #333;
-        }
+@section('content')
 
-        .sidebar {
-            width: 240px;
-            height: 100vh;
-            position: fixed;
-            background: #202b46;
-            color: white;
-            padding: 25px 20px;
-        }
-
-        .sidebar h2 {
-            margin-bottom: 35px;
-        }
-
-        .sidebar a {
-            display: block;
-            color: #dce2ee;
-            text-decoration: none;
-            padding: 13px 15px;
-            border-radius: 7px;
-            margin-bottom: 8px;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: #354568;
-            color: white;
-        }
-
-        .logout {
-            width: 100%;
-            padding: 12px;
-            margin-top: 25px;
-            border: none;
-            border-radius: 7px;
-            background: #e05252;
-            color: white;
-            cursor: pointer;
-        }
-
-        .main {
-            margin-left: 240px;
-            padding: 30px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .welcome {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-        }
-
-        .welcome h2 {
-            margin-bottom: 10px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: white;
-            padding: 22px;
-            border-radius: 12px;
-        }
-
-        .card p {
-            color: #777;
-            margin-bottom: 12px;
-        }
-
-        .card h2 {
-            font-size: 30px;
-            color: #202b46;
-        }
-
-        .content {
-            background: white;
-            padding: 22px;
-            border-radius: 12px;
-        }
-
-        .content h3 {
-            margin-bottom: 15px;
-        }
-
-        .empty {
-            padding: 35px;
-            text-align: center;
-            color: #888;
-        }
-
-        @media(max-width: 900px) {
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media(max-width: 600px) {
-            .sidebar {
-                width: 180px;
-            }
-
-            .main {
-                margin-left: 180px;
-                padding: 15px;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="sidebar">
-        <h2>MeUI Labs</h2>
-
-        <a href="{{ route('admin.dashboard') }}" class="active">Dashboard</a>
-        <a href="{{ route('user.index') }}">Kelola Pengguna</a>
-        <a href="{{ route('services.index') }}">Kelola Layanan</a>
-        <a href="{{ route('portfolios.index') }}">Kelola Portofolio</a>
-        <a href="{{ route('orders.index') }}">Kelola Pesanan</a>
-        <a href="{{ route('projects.index') }}">Kelola Proyek</a>
-
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="logout">Logout</button>
-        </form>
+{{-- HEADER DASHBOARD --}}
+<div class="page-heading d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+        <h4>Dashboard Admin</h4>
+        <p>Selamat datang kembali! Berikut ringkasan aktivitas MeUI Labs.</p>
     </div>
 
-    <div class="main">
+    <div class="text-muted small">
+        <i class="bi bi-calendar3 me-1"></i>
+        {{ now()->translatedFormat('l, d F Y') }}
+    </div>
+</div>
 
-        <div class="header">
-            <h1>Dashboard Super Admin</h1>
-            <span>{{ Auth::user()->name }}</span>
-        </div>
 
-        <div class="welcome">
-            <h2>Selamat Datang, {{ Auth::user()->name }}!</h2>
-            <p>Selamat datang di halaman Super Admin MeUI Labs.</p>
-            <p>Kelola pengguna, layanan, portofolio, pesanan, dan proyek melalui dashboard ini.</p>
-        </div>
+{{-- STATISTIK UTAMA --}}
+<div class="row g-3 mb-4">
 
-        <div class="stats">
-            <div class="card">
-                <p>Total Pengguna</p>
-                <h2>0</h2>
-            </div>
+    {{-- TOTAL PENGGUNA --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted small mb-2">Total Pengguna</p>
+                    <h3 class="fw-bold mb-1">{{ $totalUsers }}</h3>
+                    <small class="text-muted">Seluruh akun terdaftar</small>
+                </div>
 
-            <div class="card">
-                <p>Total Layanan</p>
-                <h2>0</h2>
-            </div>
-
-            <div class="card">
-                <p>Total Pesanan</p>
-                <h2>0</h2>
-            </div>
-
-            <div class="card">
-                <p>Total Proyek</p>
-                <h2>0</h2>
+                <div class="rounded-3 p-3" style="background:#e8f0f1;color:#173f46;">
+                    <i class="bi bi-people-fill fs-4"></i>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="content">
-            <h3>Informasi Sistem</h3>
+    {{-- TOTAL CUSTOMER --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted small mb-2">Customer</p>
+                    <h3 class="fw-bold mb-1">{{ $totalCustomers }}</h3>
+                    <small class="text-muted">Pengguna layanan</small>
+                </div>
 
-            <div class="empty">
-                Selamat bekerja! Pantau dan kelola seluruh aktivitas MeUI Labs melalui menu di sebelah kiri.
+                <div class="rounded-3 p-3" style="background:#eaf3ed;color:#398052;">
+                    <i class="bi bi-person-check-fill fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- TOTAL DESIGNER --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted small mb-2">Designer</p>
+                    <h3 class="fw-bold mb-1">{{ $totalDesigners }}</h3>
+                    <small class="text-muted">Tim kreatif MeUI Labs</small>
+                </div>
+
+                <div class="rounded-3 p-3" style="background:#f1ecf8;color:#7952a0;">
+                    <i class="bi bi-person-workspace fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- TOTAL PESANAN --}}
+    <div class="col-xl-3 col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted small mb-2">Total Pesanan</p>
+                    <h3 class="fw-bold mb-1">{{ $totalOrders }}</h3>
+                    <small class="text-muted">Seluruh pesanan masuk</small>
+                </div>
+
+                <div class="rounded-3 p-3" style="background:#fff3e5;color:#d28a31;">
+                    <i class="bi bi-receipt-cutoff fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{{-- STATISTIK TAMBAHAN --}}
+<div class="row g-3 mb-4">
+
+    <div class="col-xl-4 col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#e8f0f1;color:#173f46;">
+                    <i class="bi bi-briefcase-fill fs-4"></i>
+                </div>
+                <div>
+                    <p class="text-muted small mb-1">Total Layanan</p>
+                    <h4 class="fw-bold mb-0">{{ $totalServices }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#f1ecf8;color:#7952a0;">
+                    <i class="bi bi-images fs-4"></i>
+                </div>
+                <div>
+                    <p class="text-muted small mb-1">Total Portfolio</p>
+                    <h4 class="fw-bold mb-0">{{ $totalPortfolios }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="content-card h-100">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#fff3e5;color:#d28a31;">
+                    <i class="bi bi-kanban-fill fs-4"></i>
+                </div>
+                <div>
+                    <p class="text-muted small mb-1">Total Project</p>
+                    <h4 class="fw-bold mb-0">{{ $totalProjects }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{{-- STATUS PESANAN --}}
+<div class="content-card mb-4">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h6 class="fw-bold mb-1">Ringkasan Status Pesanan</h6>
+            <small class="text-muted">Pantau perkembangan seluruh pesanan.</small>
+        </div>
+
+        <a href="{{ route('admin.orders.index') }}"
+           class="btn-primary-custom">
+            Lihat Semua Pesanan
+            <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded-3 h-100" style="background:#fff8e8;">
+                <div class="text-warning mb-2">
+                    <i class="bi bi-hourglass-split fs-4"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ $pendingOrders }}</h4>
+                <small class="text-muted">Menunggu</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded-3 h-100" style="background:#eaf3fb;">
+                <div class="text-primary mb-2">
+                    <i class="bi bi-arrow-repeat fs-4"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ $processingOrders }}</h4>
+                <small class="text-muted">Diproses</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded-3 h-100" style="background:#eaf6ed;">
+                <div class="text-success mb-2">
+                    <i class="bi bi-check-circle-fill fs-4"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ $completedOrders }}</h4>
+                <small class="text-muted">Selesai</small>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded-3 h-100" style="background:#fceeee;">
+                <div class="text-danger mb-2">
+                    <i class="bi bi-x-circle-fill fs-4"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ $cancelledOrders }}</h4>
+                <small class="text-muted">Dibatalkan</small>
             </div>
         </div>
 
     </div>
+</div>
 
-</body>
-</html>
+
+{{-- PESANAN TERBARU --}}
+<div class="content-card">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h6 class="fw-bold mb-1">Pesanan Terbaru</h6>
+            <small class="text-muted">Lima pesanan terakhir yang masuk ke sistem.</small>
+        </div>
+
+        <a href="{{ route('admin.orders.index') }}"
+           class="text-decoration-none small fw-semibold"
+           style="color:#173f46;">
+            Lihat Semua
+            <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Layanan</th>
+                    <th>Tanggal</th>
+                    <th>Total Harga</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @forelse($latestOrders as $order)
+
+                    <tr>
+                        <td class="fw-semibold">
+                            #{{ $order->id }}
+                        </td>
+
+                        <td>
+                            {{ $order->customer->name ?? $order->customer->nama ?? 'Customer' }}
+                        </td>
+
+                        <td>
+                            {{ $order->service->nama_jasa ?? $order->service->nama ?? 'Layanan' }}
+                        </td>
+
+                        <td>
+                            {{ $order->tanggal_pesan
+                                ? \Carbon\Carbon::parse($order->tanggal_pesan)->format('d/m/Y')
+                                : '-' }}
+                        </td>
+
+                        <td class="fw-semibold">
+                            Rp{{ number_format($order->total_harga ?? 0, 0, ',', '.') }}
+                        </td>
+
+                        <td>
+                            @php
+                                $statusColors = [
+                                    'menunggu' => 'warning',
+                                    'diproses' => 'primary',
+                                    'selesai' => 'success',
+                                    'dibatalkan' => 'danger',
+                                ];
+
+                                $status = strtolower($order->status ?? 'menunggu');
+                                $badgeColor = $statusColors[$status] ?? 'secondary';
+                            @endphp
+
+                            <span class="badge bg-{{ $badgeColor }}-subtle text-{{ $badgeColor }} px-3 py-2">
+                                {{ ucfirst($status) }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <a href="{{ route('admin.orders.show', $order->id) }}"
+                               class="btn btn-sm btn-outline-secondary"
+                               title="Lihat Detail">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                @empty
+
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted"></i>
+                            <p class="text-muted mt-2 mb-0">
+                                Belum ada pesanan yang masuk.
+                            </p>
+                        </td>
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+@endsection

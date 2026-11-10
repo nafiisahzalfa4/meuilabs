@@ -1,30 +1,42 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class ServiceController extends Controller
 {
-    // Menampilkan semua layanan
+    private function checkAdmin()
+    {
+        abort_unless(auth()->check() && auth()->user()->role == 'admin', 403);
+    }
+
+    // Menampilkan semua jasa
     public function index()
     {
+        $this->checkAdmin();
+
         $services = Service::latest()->get();
 
-        return view('services.index', compact('services'));
+        return view('admin.services.index', compact('services'));
     }
 
-    // Menampilkan form tambah layanan
+    // Form tambah jasa
     public function create()
     {
-        return view('services.create');
+        $this->checkAdmin();
+
+        return view('admin.services.create');
     }
 
-    // Menyimpan layanan baru
+    // Menyimpan jasa
     public function store(Request $request)
     {
+        $this->checkAdmin();
+
         $request->validate([
             'nama_jasa' => 'required|string|max:100',
             'deskripsi' => 'required|string',
@@ -61,28 +73,34 @@ class ServiceController extends Controller
 
         return redirect()
             ->route('services.index')
-            ->with('success', 'Layanan berhasil ditambahkan.');
+            ->with('success', 'Jasa berhasil ditambahkan.');
     }
 
-    // Menampilkan detail layanan
+    // Detail jasa
     public function show($id)
     {
+        $this->checkAdmin();
+
         $service = Service::findOrFail($id);
 
-        return view('services.show', compact('service'));
+        return view('admin.services.show', compact('service'));
     }
 
-    // Menampilkan form edit layanan
+    // Form edit jasa
     public function edit($id)
     {
+        $this->checkAdmin();
+
         $service = Service::findOrFail($id);
 
         return view('services.edit', compact('service'));
     }
 
-    // Memperbarui layanan
+    // Update jasa
     public function update(Request $request, $id)
     {
+        $this->checkAdmin();
+
         $service = Service::findOrFail($id);
 
         $request->validate([
@@ -107,7 +125,6 @@ class ServiceController extends Controller
                 File::makeDirectory($folder, 0755, true);
             }
 
-            // Hapus gambar lama
             if ($service->gambar) {
                 $gambarLama = $folder . '/' . $service->gambar;
 
@@ -130,19 +147,18 @@ class ServiceController extends Controller
 
         return redirect()
             ->route('services.index')
-            ->with('success', 'Data layanan berhasil diperbarui.');
+            ->with('success', 'Jasa berhasil diperbarui.');
     }
 
-    // Menghapus layanan
+    // Hapus jasa
     public function destroy($id)
     {
+        $this->checkAdmin();
+
         $service = Service::findOrFail($id);
 
-        // Hapus file gambar
         if ($service->gambar) {
-            $gambar = public_path(
-                'images/services/' . $service->gambar
-            );
+            $gambar = public_path('images/services/' . $service->gambar);
 
             if (File::exists($gambar)) {
                 File::delete($gambar);
@@ -153,6 +169,6 @@ class ServiceController extends Controller
 
         return redirect()
             ->route('services.index')
-            ->with('success', 'Layanan berhasil dihapus.');
+            ->with('success', 'Jasa berhasil dihapus.');
     }
 }

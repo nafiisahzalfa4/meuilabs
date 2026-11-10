@@ -9,11 +9,15 @@ class RoleMiddleware
 {
     public function handle($request, Closure $next, ...$roles)
     {
+        // Pastikan user sudah login
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        if (!in_array(Auth::user()->role, $roles)) {
+        $user = Auth::user();
+
+        // Periksa apakah role user diizinkan
+        if (!in_array($user->role, $roles)) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
