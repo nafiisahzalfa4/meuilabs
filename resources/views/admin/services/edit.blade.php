@@ -97,25 +97,39 @@
                         @enderror
                     </div>
 
+                    
                     {{-- Gambar Saat Ini --}}
                     <div class="col-12 mb-3">
                         <label class="form-label fw-semibold">
                             Gambar Saat Ini
                         </label>
 
-                        <div>
+                        <div class="mt-2">
                             @if($service->gambar)
-                                <img src="{{ asset($service->gambar) }}"
-                                     alt="{{ $service->nama_jasa }}"
-                                     style="width: 200px; height: 140px; object-fit: cover; border-radius: 10px;">
+                                <img src="{{ asset('images/services/' . $service->gambar) }}"
+                                    alt="{{ $service->nama_jasa }}"
+                                    style="width: 250px;
+                                            height: 170px;
+                                            object-fit: cover;
+                                            border-radius: 10px;
+                                            border: 1px solid #dee2e6;"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+
+                                <div class="text-danger small mt-2" style="display: none;">
+                                    Gambar tidak ditemukan. Periksa lokasi file gambar.
+                                </div>
                             @else
                                 <div class="bg-light rounded d-flex align-items-center justify-content-center"
-                                     style="width: 200px; height: 140px;">
-                                    <span class="text-muted">Belum ada gambar</span>
+                                    style="width: 250px; height: 170px;">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-image fs-1"></i>
+                                        <p class="mb-0 small">Belum ada gambar</p>
+                                    </div>
                                 </div>
                             @endif
                         </div>
                     </div>
+
 
                     {{-- Ganti Gambar --}}
                     <div class="col-md-6 mb-3">

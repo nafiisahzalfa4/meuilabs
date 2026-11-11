@@ -65,22 +65,30 @@
                                     {{ $loop->iteration }}
                                 </td>
 
+                                
                                 {{-- Gambar --}}
                                 <td>
                                     @if($service->gambar)
                                         <img
-                                            src="{{ asset($service->gambar) }}"
+                                            src="{{ asset('images/services/' . $service->gambar) }}"
                                             alt="{{ $service->nama_jasa }}"
                                             width="75"
                                             height="55"
-                                            style="object-fit: cover; border-radius: 8px;">
+                                            style="object-fit: cover; border-radius: 8px;"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                        <div class="bg-light rounded align-items-center justify-content-center"
+                                            style="width: 75px; height: 55px; display: none;">
+                                            <i class="bi bi-image text-secondary fs-4"></i>
+                                        </div>
                                     @else
                                         <div class="bg-light rounded d-flex align-items-center justify-content-center"
-                                             style="width: 75px; height: 55px;">
+                                            style="width: 75px; height: 55px;">
                                             <i class="bi bi-image text-secondary fs-4"></i>
                                         </div>
                                     @endif
                                 </td>
+
 
                                 {{-- Nama --}}
                                 <td>

@@ -27,6 +27,11 @@
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            min-height: 100%;
+        }
+
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
@@ -132,18 +137,21 @@
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* TOPBAR */
 
         .topbar {
-            height: 75px;
+            min-height: 75px;
             background: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 32px;
+            padding: 12px 32px;
             border-bottom: 1px solid #e9eeee;
+            flex-shrink: 0;
         }
 
         .topbar-title {
@@ -191,6 +199,7 @@
 
         .content-wrapper {
             padding: 30px 32px;
+            flex: 1 0 auto;
         }
 
         .page-heading {
@@ -279,7 +288,8 @@
             font-size: 11px;
             border-top: 1px solid #e9eeee;
             background: white;
-            margin-top: 30px;
+            margin-top: 0;
+            flex-shrink: 0;
         }
 
         /* MOBILE */
@@ -299,7 +309,7 @@
         @media (max-width: 768px) {
 
             .sidebar {
-                left: -260px;
+                left: calc(-1 * var(--sidebar-width));
             }
 
             .sidebar.show {
@@ -316,6 +326,7 @@
 
             .main-content {
                 margin-left: 0;
+                min-height: 100vh;
             }
 
             .menu-toggle {
@@ -323,7 +334,7 @@
             }
 
             .topbar {
-                padding: 0 18px;
+                padding: 12px 18px;
             }
 
             .content-wrapper {
@@ -367,7 +378,11 @@
                 </a>
             </li>
 
-            <div class="menu-label">MANAJEMEN</div>
+        </ul>
+
+        <div class="menu-label">MANAJEMEN</div>
+
+        <ul class="sidebar-menu">
 
             <li>
                 <a href="{{ route('admin.orders.index') }}"
@@ -414,6 +429,7 @@
         <div class="menu-label">AKUN</div>
 
         <ul class="sidebar-menu">
+
             <li>
                 <a href="{{ route('home') }}">
                     <i class="bi bi-house-door"></i>
@@ -428,6 +444,7 @@
                     Keluar
                 </a>
             </li>
+
         </ul>
 
         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

@@ -15,15 +15,13 @@ class ProjectController extends Controller
     }
 
     // Menampilkan semua project
-    public function index()
+   public function index()
     {
         $this->checkAdmin();
 
-        $projects = Project::with('order.customer', 'order.service')
-            ->latest()
-            ->get();
+        $projects = Project::latest()->paginate(10);
 
-        return view('projects.index', compact('projects'));
+        return view('admin.projects.index', compact('projects'));
     }
 
     // Form tambah project
@@ -36,7 +34,7 @@ class ProjectController extends Controller
             ->latest()
             ->get();
 
-        return view('projects.create', compact('orders'));
+        return view('admin.projects.create', compact('orders'));
     }
 
     // Menyimpan project
@@ -84,7 +82,7 @@ class ProjectController extends Controller
 
         $project->load('order.customer', 'order.service');
 
-        return view('projects.show', compact('project'));
+        return view('admin.projects.show', compact('project'));
     }
 
     // Form edit project
@@ -100,7 +98,7 @@ class ProjectController extends Controller
             ->latest()
             ->get();
 
-        return view('projects.edit', compact('project', 'orders'));
+        return view('admin.projects.edit', compact('project', 'orders'));
     }
 
     // Update project
@@ -140,7 +138,7 @@ class ProjectController extends Controller
         ]);
 
         return redirect()
-            ->route('projects.index')
+            ->route('admin.projects.index')
             ->with('success', 'Project berhasil diperbarui.');
     }
 
@@ -152,7 +150,7 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()
-            ->route('projects.index')
+            ->route('admin.projects.index')
             ->with('success', 'Project berhasil dihapus.');
     }
 }

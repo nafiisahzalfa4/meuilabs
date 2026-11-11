@@ -93,7 +93,7 @@ class ServiceController extends Controller
 
         $service = Service::findOrFail($id);
 
-        return view('services.edit', compact('service'));
+        return view('admin.services.edit', compact('service'));
     }
 
     // Update jasa

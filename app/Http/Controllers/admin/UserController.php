@@ -22,7 +22,7 @@ class UserController extends Controller
 
         $users = User::latest()->get();
 
-        return view('user.index', compact('users'));
+        return view('admin.user.index', compact('users'));
     }
 
     // Form tambah user
@@ -30,7 +30,7 @@ class UserController extends Controller
     {
         $this->checkAdmin();
 
-        return view('user.create');
+        return view('admin.user.create');
     }
 
     // Menyimpan user
@@ -88,7 +88,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
 
-        return view('user.edit', compact('user'));
+        return view('admin.user.edit', compact('user'));
     }
 
     // Update user
