@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 // Controller halaman publik
 use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Admin\PortofolioController as PublicPortofolioController;
 
@@ -53,6 +54,8 @@ Route::get('/', function () {
 | AUTHENTICATION
 |--------------------------------------------------------------------------
 */
+Route::get('/register', [RegisterController::class, 'showRegister'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
 Route::get('/login', [LoginController::class, 'showLogin'])
     ->name('login');
