@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
 // Controller halaman publik
-use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Admin\PortofolioController as PublicPortofolioController;
 
@@ -71,10 +71,10 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 
-Route::get('/services', [ServiceController::class, 'index'])
+Route::get('/services', [ServicesController::class, 'index'])
     ->name('services.index');
 
-Route::get('/services/{service}', [ServiceController::class, 'show'])
+Route::get('/services/{service}', [ServicesController::class, 'show'])
     ->name('services.show');
 
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Service;
 
-class ServiceController extends Controller
+class ServicesController extends Controller
 {
     // Menampilkan layanan yang aktif
     public function index()
