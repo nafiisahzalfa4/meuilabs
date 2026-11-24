@@ -154,7 +154,6 @@
         <a href="{{ route('admin.orders.index') }}"
            class="btn-primary-custom">
             Lihat Semua Pesanan
-            <i class="bi bi-arrow-right ms-1"></i>
         </a>
     </div>
 
@@ -217,7 +216,6 @@
            class="text-decoration-none small fw-semibold"
            style="color:#173f46;">
             Lihat Semua
-            <i class="bi bi-arrow-right ms-1"></i>
         </a>
     </div>
 

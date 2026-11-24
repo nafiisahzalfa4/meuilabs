@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
-// Controller lama untuk halaman publik
-use App\Http\Controllers\Admin\PortofolioController;
+// Controller halaman publik
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Admin\PortofolioController as PublicPortofolioController;
 
 // Controller Admin
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -32,7 +32,6 @@ use App\Http\Controllers\Designer\OrderController as DesignerOrderController;
 */
 
 Route::get('/', function () {
-
     $services = DB::table('services')
         ->where('status', 'aktif')
         ->latest('id')
@@ -45,7 +44,6 @@ Route::get('/', function () {
         ->get();
 
     return view('welcome', compact('services', 'portfolios'));
-
 })->name('home');
 
 
@@ -72,11 +70,9 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 
-// Halaman layanan yang bisa dilihat pengunjung
 Route::get('/services', [ServiceController::class, 'index'])
     ->name('services.index');
 
-// Route detail diletakkan setelah route create admin
 Route::get('/services/{service}', [ServiceController::class, 'show'])
     ->name('services.show');
 
@@ -87,11 +83,10 @@ Route::get('/services/{service}', [ServiceController::class, 'show'])
 |--------------------------------------------------------------------------
 */
 
-// Halaman portfolio yang bisa dilihat pengunjung
-Route::get('/portfolios', [PortofolioController::class, 'index'])
+Route::get('/portfolios', [PublicPortofolioController::class, 'index'])
     ->name('portfolios.index');
 
-Route::get('/portfolios/{portfolio}', [PortofolioController::class, 'show'])
+Route::get('/portfolios/{portfolio}', [PublicPortofolioController::class, 'show'])
     ->name('portfolios.show');
 
 
@@ -106,15 +101,10 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-        // Dashboard Admin
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])
             ->name('dashboard');
 
-
-        /*
-        | USER MANAGEMENT
-        */
-
+        // USER MANAGEMENT
         Route::get('/user', [AdminUserController::class, 'index'])
             ->name('user.index');
 
@@ -134,10 +124,7 @@ Route::middleware(['auth', 'role:admin'])
             ->name('user.destroy');
 
 
-        /*
-        | SERVICE MANAGEMENT
-        */
-
+        // SERVICE MANAGEMENT
         Route::get('/services', [AdminServiceController::class, 'index'])
             ->name('services.index');
 
@@ -157,10 +144,7 @@ Route::middleware(['auth', 'role:admin'])
             ->name('services.destroy');
 
 
-        /*
-        | PORTFOLIO MANAGEMENT
-        */
-
+        // PORTFOLIO MANAGEMENT
         Route::get('/portfolios', [AdminPortofolioController::class, 'index'])
             ->name('portfolios.index');
 
@@ -170,12 +154,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/portfolios', [AdminPortofolioController::class, 'store'])
             ->name('portfolios.store');
 
-        // DETAIL PORTOFOLIO
-        Route::get('/portfolios/{portfolio}', [AdminPortofolioController::class, 'show'])
-            ->name('portfolios.show');
-
         Route::get('/portfolios/{portfolio}/edit', [AdminPortofolioController::class, 'edit'])
             ->name('portfolios.edit');
+
+        Route::get('/portfolios/{portfolio}', [AdminPortofolioController::class, 'show'])
+            ->name('portfolios.show');
 
         Route::put('/portfolios/{portfolio}', [AdminPortofolioController::class, 'update'])
             ->name('portfolios.update');
@@ -184,10 +167,7 @@ Route::middleware(['auth', 'role:admin'])
             ->name('portfolios.destroy');
 
 
-        /*
-        | ADMIN ORDER MANAGEMENT
-        */
-
+        // ORDER MANAGEMENT
         Route::get('/orders', [AdminOrderController::class, 'index'])
             ->name('orders.index');
 
@@ -210,10 +190,7 @@ Route::middleware(['auth', 'role:admin'])
             ->name('orders.destroy');
 
 
-        /*
-        | PROJECT MANAGEMENT
-        */
-
+        // PROJECT MANAGEMENT
         Route::get('/projects', [AdminProjectController::class, 'index'])
             ->name('projects.index');
 
@@ -234,7 +211,6 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::delete('/projects/{project}', [AdminProjectController::class, 'destroy'])
             ->name('projects.destroy');
-
     });
 
 
@@ -249,12 +225,9 @@ Route::middleware(['auth', 'role:customer'])
     ->name('customer.')
     ->group(function () {
 
-        // Dashboard Customer
         Route::get('/dashboard', [CustomerDashboardController::class, 'index'])
             ->name('dashboard');
 
-
-        // Pesanan Customer
         Route::get('/orders', [CustomerOrderController::class, 'index'])
             ->name('orders.index');
 
@@ -275,7 +248,6 @@ Route::middleware(['auth', 'role:customer'])
 
         Route::delete('/orders/{order}', [CustomerOrderController::class, 'destroy'])
             ->name('orders.destroy');
-
     });
 
 
@@ -290,19 +262,18 @@ Route::middleware(['auth', 'role:designer'])
     ->name('designer.')
     ->group(function () {
 
-        // Dashboard Designer
         Route::get('/dashboard', [DesignerDashboardController::class, 'index'])
             ->name('dashboard');
 
-
-        // Pekerjaan Designer
+        // Daftar pekerjaan
         Route::get('/orders', [DesignerOrderController::class, 'index'])
             ->name('orders.index');
 
+        // Detail pekerjaan
         Route::get('/orders/{order}', [DesignerOrderController::class, 'show'])
             ->name('orders.show');
 
+        // Update status pekerjaan
         Route::patch('/orders/{order}/status', [DesignerOrderController::class, 'updateStatus'])
             ->name('orders.updateStatus');
-
     });
