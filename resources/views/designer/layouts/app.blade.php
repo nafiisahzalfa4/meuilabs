@@ -358,10 +358,10 @@
             </div>
         </div>
 
+        <!-- MENU UTAMA -->
         <div class="menu-label">MENU UTAMA</div>
 
         <ul class="sidebar-menu">
-
             <li>
                 <a href="{{ route('designer.dashboard') }}"
                    class="{{ request()->routeIs('designer.dashboard') ? 'active' : '' }}">
@@ -369,13 +369,14 @@
                     Dashboard
                 </a>
             </li>
-
         </ul>
 
+        <!-- PEKERJAAN -->
         <div class="menu-label">PEKERJAAN</div>
 
         <ul class="sidebar-menu">
 
+            {{-- Pesanan Saya --}}
             <li>
                 <a href="{{ route('designer.orders.index') }}"
                    class="{{ request()->routeIs('designer.orders.*') ? 'active' : '' }}">
@@ -384,8 +385,18 @@
                 </a>
             </li>
 
+            {{-- Project Saya --}}
+            <li>
+                <a href="{{ route('designer.projects.index') }}"
+                   class="{{ request()->routeIs('designer.projects.*') ? 'active' : '' }}">
+                    <i class="bi bi-kanban"></i>
+                    Project Saya
+                </a>
+            </li>
+
         </ul>
 
+        <!-- AKUN -->
         <div class="menu-label">AKUN</div>
 
         <ul class="sidebar-menu">
@@ -415,7 +426,6 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay"
          onclick="toggleSidebar()"></div>
-
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
@@ -459,7 +469,6 @@
 
         </header>
 
-
         <!-- PAGE CONTENT -->
         <section class="content-wrapper">
 
@@ -495,14 +504,12 @@
 
         </section>
 
-
         <!-- FOOTER -->
         <footer class="footer">
             &copy; {{ date('Y') }} MeUI Labs. All rights reserved.
         </footer>
 
     </main>
-
 
     <!-- BOOTSTRAP JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

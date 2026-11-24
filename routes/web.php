@@ -23,6 +23,7 @@ use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 // Controller Designer
 use App\Http\Controllers\Designer\DashboardController as DesignerDashboardController;
 use App\Http\Controllers\Designer\OrderController as DesignerOrderController;
+use App\Http\Controllers\Designer\ProjectController as DesignerProjectController;
 
 
 /*
@@ -276,4 +277,15 @@ Route::middleware(['auth', 'role:designer'])
         // Update status pekerjaan
         Route::patch('/orders/{order}/status', [DesignerOrderController::class, 'updateStatus'])
             ->name('orders.updateStatus');
+
+        // PROJECT MANAGEMENT
+        Route::get('/projects', [DesignerProjectController::class, 'index'])
+            ->name('projects.index');
+
+        Route::get('/projects/{id}', [DesignerProjectController::class, 'show'])
+            ->name('projects.show');
+
+        Route::patch('/projects/{id}', [DesignerProjectController::class, 'update'])
+            ->name('projects.update');
+
     });

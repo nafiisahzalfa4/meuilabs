@@ -1,9 +1,10 @@
-
 @extends('designer.layouts.app')
 
 @section('content')
 
 <div class="container-fluid">
+
+    {{-- Header Dashboard --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="fw-bold mb-1">Dashboard Designer</h3>
@@ -11,6 +12,11 @@
                 Selamat datang, {{ $user->name }}!
             </p>
         </div>
+
+        <a href="{{ route('designer.projects.index') }}"
+           class="btn btn-primary">
+            <i class="bi bi-kanban"></i> Project Saya
+        </a>
     </div>
 
     {{-- Statistik Pekerjaan --}}
@@ -65,6 +71,7 @@
 
     {{-- Daftar Pekerjaan Terbaru --}}
     <div class="card border-0 shadow-sm">
+
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">Pekerjaan Terbaru</h5>
