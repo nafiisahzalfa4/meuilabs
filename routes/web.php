@@ -220,15 +220,16 @@ Route::middleware(['auth', 'role:admin'])
 | CUSTOMER
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'role:customer'])
     ->prefix('customer')
     ->name('customer.')
     ->group(function () {
 
+        // Dashboard
         Route::get('/dashboard', [CustomerDashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Pesanan Customer
         Route::get('/orders', [CustomerOrderController::class, 'index'])
             ->name('orders.index');
 
@@ -238,18 +239,20 @@ Route::middleware(['auth', 'role:customer'])
         Route::post('/orders', [CustomerOrderController::class, 'store'])
             ->name('orders.store');
 
-        Route::get('/orders/{order}/edit', [CustomerOrderController::class, 'edit'])
+        Route::get('/orders/{id}/edit', [CustomerOrderController::class, 'edit'])
             ->name('orders.edit');
 
-        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])
+        Route::get('/orders/{id}', [CustomerOrderController::class, 'show'])
             ->name('orders.show');
 
-        Route::put('/orders/{order}', [CustomerOrderController::class, 'update'])
+        Route::put('/orders/{id}', [CustomerOrderController::class, 'update'])
             ->name('orders.update');
 
-        Route::delete('/orders/{order}', [CustomerOrderController::class, 'destroy'])
+        Route::delete('/orders/{id}', [CustomerOrderController::class, 'destroy'])
             ->name('orders.destroy');
     });
+
+
 
 
 /*

@@ -12,18 +12,18 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Pastikan hanya customer yang dapat mengakses dashboard ini
+        // Memastikan hanya customer yang dapat mengakses dashboard
         if (!$user || $user->role !== 'customer') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        // Mengambil pesanan milik customer yang sedang login
+        // Mengambil pesanan milik customer
         $orders = Order::with(['service', 'designer', 'project'])
             ->where('customer_id', $user->id)
             ->latest()
             ->get();
 
-        // Menghitung jumlah pesanan berdasarkan status
+        // Menghitung jumlah pesanan
         $totalOrders = $orders->count();
 
         $pendingOrders = $orders->where('status', 'menunggu')->count();

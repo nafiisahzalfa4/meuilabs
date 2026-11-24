@@ -31,7 +31,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Menampilkan daftar pesanan customer.
+     * Menampilkan daftar pesanan.
      */
     public function index()
     {
@@ -42,11 +42,11 @@ class OrderController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('orders.index', compact('orders'));
+        return view('customer.orders.index', compact('orders'));
     }
 
     /**
-     * Menampilkan formulir pembuatan pesanan.
+     * Form tambah pesanan.
      */
     public function create()
     {
@@ -56,11 +56,11 @@ class OrderController extends Controller
             ->orderBy('nama_jasa')
             ->get();
 
-        return view('orders.create', compact('services'));
+        return view('customer.orders.create', compact('services'));
     }
 
     /**
-     * Menyimpan pesanan baru.
+     * Menyimpan pesanan.
      */
     public function store(Request $request)
     {
@@ -72,7 +72,6 @@ class OrderController extends Controller
             'catatan' => 'nullable|string|max:2000',
         ]);
 
-        // Pastikan layanan yang dipilih masih aktif
         $service = Service::where('id', $validated['service_id'])
             ->where('status', 'aktif')
             ->first();
@@ -96,12 +95,12 @@ class OrderController extends Controller
         ]);
 
         return redirect()
-            ->route('orders.index')
+            ->route('customer.orders.index')
             ->with('success', 'Pesanan berhasil dibuat!');
     }
 
     /**
-     * Menampilkan detail pesanan.
+     * Detail pesanan.
      */
     public function show($id)
     {
@@ -113,7 +112,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Menampilkan formulir edit pesanan.
+     * Form edit pesanan.
      */
     public function edit($id)
     {
@@ -121,10 +120,9 @@ class OrderController extends Controller
 
         $order = $this->findCustomerOrder($id);
 
-        // Customer hanya boleh mengedit pesanan yang masih menunggu
         if ($order->status !== 'menunggu') {
             return redirect()
-                ->route('orders.index')
+                ->route('customer.orders.index')
                 ->with('error', 'Pesanan tidak dapat diedit karena sudah diproses.');
         }
 
@@ -132,7 +130,7 @@ class OrderController extends Controller
             ->orderBy('nama_jasa')
             ->get();
 
-        return view('orders.edit', compact('order', 'services'));
+        return view('customer.orders.edit', compact('order', 'services'));
     }
 
     /**
@@ -146,7 +144,7 @@ class OrderController extends Controller
 
         if ($order->status !== 'menunggu') {
             return redirect()
-                ->route('orders.index')
+                ->route('customer.orders.index')
                 ->with('error', 'Pesanan tidak dapat diubah karena sudah diproses.');
         }
 
@@ -176,7 +174,7 @@ class OrderController extends Controller
         ]);
 
         return redirect()
-            ->route('orders.index')
+            ->route('customer.orders.index')
             ->with('success', 'Pesanan berhasil diperbarui!');
     }
 
@@ -189,20 +187,18 @@ class OrderController extends Controller
 
         $order = $this->findCustomerOrder($id);
 
-        // Customer hanya boleh membatalkan pesanan yang masih menunggu
         if ($order->status !== 'menunggu') {
             return redirect()
-                ->route('orders.index')
+                ->route('customer.orders.index')
                 ->with('error', 'Pesanan tidak dapat dibatalkan karena sudah diproses.');
         }
 
-        // Pesanan tidak dihapus dari database, hanya diubah statusnya
         $order->update([
             'status' => 'dibatalkan',
         ]);
 
         return redirect()
-            ->route('orders.index')
+            ->route('customer.orders.index')
             ->with('success', 'Pesanan berhasil dibatalkan.');
     }
 }
